@@ -53,15 +53,24 @@ def get_queryString(event, parameter):
 #
 # HTTP response functions
 #
+def response(statusCode, body, other_info):
+    """
+    Creates a HTTP response message with the given statusCode and body.
+    Adds any other_info to the response.
+    Returns the HTTP response formatted for Lambda.
+    """
+    msg = other_info.copy() if isinstance(other_info, collections.Mapping) else {}
+    msg.update({"statusCode": statusCode, "body": body})
+    return msg
+
+
 def response_ok(body, other_info={}):
     """
     Creates a HTTP 200 (OK) response message.
     Adds other_info (dict) to the response if it is specified.
     Returns the HTTP response formatted for Lambda.
     """
-    response = other_info.copy() if isinstance(other_info, collections.Mapping) else {}
-    response.update({"statusCode": 200, "body": body})
-    return response
+    return response(200, body, other_info if isinstance(other_info, collections.Mapping) else {})
 
 
 def response_bad_request(reason, other_info={}):
@@ -70,6 +79,4 @@ def response_bad_request(reason, other_info={}):
     Adds other_info (dict) to the response if it is specified.
     Returns the HTTP response formatted for Lambda.
     """
-    response = other_info.copy() if isinstance(other_info, collections.Mapping) else {}
-    response.update({"statusCode": 400, "body": reason})
-    return response
+    return response(400, reason, other_info if isinstance(other_info, collections.Mapping) else {})
