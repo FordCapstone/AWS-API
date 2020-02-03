@@ -10,6 +10,7 @@ multiple Lambda functions.
 #
 import collections
 import psycopg2
+import toJson
 
 
 #
@@ -21,9 +22,9 @@ valid_platforms = ["web", "ios"]
 #
 # Functions / classes
 #
-def dbConnection(dbName, dbUser, dbHost, dbPass):
+def db_connect(dbName, dbUser, dbHost, dbPass):
     """
-    Makes a connection the database specified by the parameters.
+    Makes a connection the postgres database specified by the parameters.
     Returns the connection to the database.
     """
     try:
@@ -31,6 +32,51 @@ def dbConnection(dbName, dbUser, dbHost, dbPass):
         return conn
     except psycopg2.Error as e: 
         print(e)
+
+
+def db_get_all(conn, table):
+    """
+    Gets all of the rows in the specified table.
+    Returns all the rows formatted as JSON.
+    """
+    return db_get_where(conn, table, [], [])
+
+
+def db_get_where(conn, table, columns, values):
+    """
+    Gets all rows from the specified table that match the given conditions.
+    The columns and values lists should be the same length.
+    Returns all the rows formatted as JSON.
+    """
+    # Format the SELECT constraints
+    constr = list(zip(columns, values))
+    pairs = len(constr)
+
+    # Construct the query string
+    query_str = f"SELECT * FROM {table}"
+    if pairs > 0:
+        # Construct the WHERE constraints
+        query_str = query_str + " WHERE " + " AND ".join([" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in constr]) + ";"
+    else:
+        # No constraints, get all rows
+        query_str = query_str + ";"
+
+    # Attempt to get values from the database in the specified table
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query_str)
+        results = cursor.fetchall()
+        colnames = [desc[0] for desc in cursor.description]
+    except psycopg2.Error as e:
+        print(e)
+
+    # Check that the database returned values
+    if(results == None):
+        print(f"ERROR: Unable to fetch any values from the table: {table}")
+        return json.loads([])
+    else:
+        results_json = json.loads(toJson.ConvertToJson(colnames, results))
+        return results_json
 
 
 def get_queryString(event, parameter):
