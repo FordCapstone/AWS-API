@@ -32,7 +32,7 @@ def get_car_all(conn, platform):
     Retrieves all cars from the database
     Returns the cars from the database as JSON
     
-    TODO: vary the retruned JSON depending on the platform
+    TODO: vary the returned JSON depending on the platform
     """
     try:
         cursor = conn.cursor()
