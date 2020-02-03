@@ -33,24 +33,21 @@ def dbConnection(dbName, dbUser, dbHost, dbPass):
         print(e)
 
 
-def get_platform(event):
+def get_queryString(event, parameter):
     """
-    Gets the target platform for the API call,
+    Gets the specified parameter from the queryStringParameters header,
     where event is the Lambda event object passed to the handler.
-    Returns the platform as a string if a valid one is found.
+    Returns the value if one is found.
     Otherwise returns an empty string.
     """
-    platform = ""
+    qSP_str = "queryStringParameters"
+    value = ""
     
     # Check if a platform is specified
-    if "queryStringParameters" in event and event["queryStringParameters"] and "platform" in event["queryStringParameters"]:
-        platform = event["queryStringParameters"]["platform"]
-        
-        # Make sure the platform is valid
-        if not platform in valid_platforms:
-            return ""
+    if qSP_str in event and event[qSP_str] and parameter in event[qSP_str]:
+        value = event[qSP_str][parameter]
     
-    return platform
+    return value
 
 
 #
