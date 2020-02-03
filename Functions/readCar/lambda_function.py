@@ -19,12 +19,12 @@ def lambda_handler(event, context):
         return cc.response_bad_request(json.dumps(reason))
     
     #Create a connection to the database
-    conn = cc.dbConnection(os.environ["dbName"], os.environ["dbUser"],
+    conn = cc.db_connect(os.environ["dbName"], os.environ["dbUser"],
                            os.environ["dbHost"], os.environ["dbPass"])
     
     # Return the list of cars
     if(conn != None):
-        return cc.response_ok(json.dumps(json.loads(get_car_all(conn, platform))))
+        return cc.response_ok(json.dumps(get_car_all(conn, platform)))
 
 
 def get_car_all(conn, platform):
@@ -34,17 +34,4 @@ def get_car_all(conn, platform):
     
     TODO: vary the returned JSON depending on the platform
     """
-    try:
-        cursor = conn.cursor()
-        cursor.execute('SELECT * FROM car;')
-        car = cursor.fetchall()
-        colnames = [desc[0] for desc in cursor.description]
-    except psycopg2.Error as e:
-        print(e)
-
-    if(car == None):
-        print("No cars found!")
-    else:
-        car = toJson.ConvertToJson(colnames, car)
-        return car
-    return None
+    return cc.db_get_all(conn, "car")
