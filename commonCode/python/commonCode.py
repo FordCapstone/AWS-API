@@ -8,6 +8,7 @@ multiple Lambda functions.
 #
 # Import staements
 #
+import collections
 import psycopg2
 
 
@@ -42,7 +43,7 @@ def get_platform(event):
     platform = ""
     
     # Check if a platform is specified
-    if "queryStringParameters" in event and "platform" in event["queryStringParameters"]:
+    if "queryStringParameters" in event and event["queryStringParameters"] and "platform" in event["queryStringParameters"]:
         platform = event["queryStringParameters"]["platform"]
         
         # Make sure the platform is valid
@@ -55,7 +56,7 @@ def get_platform(event):
 #
 # HTTP response functions
 #
-def response_ok(body, other_info):
+def response_ok(body, other_info={}):
     """
     Creates a HTTP 200 (OK) response message.
     Adds other_info (dict) to the response if it is specified.
@@ -66,7 +67,7 @@ def response_ok(body, other_info):
     return response
 
 
-def response_bad_request(reason, other_info):
+def response_bad_request(reason, other_info={}):
     """
     Creates a HTTP 400 (Bad Request) response message.
     Adds other_info (dict) to the response if it is specified.
