@@ -11,8 +11,8 @@ def lambda_handler(event, context):
     Returns all of the cars in the database as JSON
     """
     # Get the platform: web or iOS
-    platform = cc.get_platform(event)
-    if platform == "":
+    platform = cc.get_queryString(event, "platform")
+    if not platform in cc.valid_platforms:
         # Return an error to the client if a platform is not specified correctly
         msg = f"'platform' must be specified in the queryStringParameters header with a value from: {cc.valid_platforms}."
         reason = {"reason": msg}
