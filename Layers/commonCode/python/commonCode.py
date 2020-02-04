@@ -47,6 +47,8 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     """
     Gets all rows from the specified table that match the given conditions.
     The columns and values lists should be the same length.
+    A value of True in the use_or list indicates that OR should be used to
+    join those 2 constraints instead of AND.
     Returns all the matched rows formatted as JSON.
     """
     # Format the SELECT constraints
@@ -61,7 +63,6 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     query_str = f"SELECT * FROM {table}"
     if pairs > 0:
         # Construct the WHERE constraints
-        #query_str = query_str + " WHERE " + " AND ".join([" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in constr]) + ";"
         query_str = query_str + f" WHERE {constr_str};"
     else:
         # No constraints, get all rows
