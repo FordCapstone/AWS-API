@@ -43,21 +43,26 @@ def db_get_all(conn, table):
     return db_get_where(conn, table, [], [])
 
 
-def db_get_where(conn, table, columns, values):
+def db_get_where(conn, table, columns, values, use_or=[]):
     """
     Gets all rows from the specified table that match the given conditions.
     The columns and values lists should be the same length.
     Returns all the matched rows formatted as JSON.
     """
     # Format the SELECT constraints
-    constr = list(zip(columns, values))
+    constr = [" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in list(zip(columns, values))]
     pairs = len(constr)
+    use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
+
+    # Add in 'AND' or 'OR' between the constraints
+    constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constr[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
 
     # Construct the query string
     query_str = f"SELECT * FROM {table}"
     if pairs > 0:
         # Construct the WHERE constraints
-        query_str = query_str + " WHERE " + " AND ".join([" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in constr]) + ";"
+        #query_str = query_str + " WHERE " + " AND ".join([" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in constr]) + ";"
+        query_str = query_str + f" WHERE {constr_str};"
     else:
         # No constraints, get all rows
         query_str = query_str + ";"
