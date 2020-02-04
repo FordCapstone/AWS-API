@@ -47,7 +47,7 @@ def db_get_where(conn, table, columns, values):
     """
     Gets all rows from the specified table that match the given conditions.
     The columns and values lists should be the same length.
-    Returns all the rows formatted as JSON.
+    Returns all the matched rows formatted as JSON.
     """
     # Format the SELECT constraints
     constr = list(zip(columns, values))
