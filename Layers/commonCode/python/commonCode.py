@@ -59,25 +59,28 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
     # Format the SELECT constraints
-    constraint_list = [sql.SQL("{} = %s").format(sql.Literal(columns[i])).as_string(conn) for i in range(pairs)]
+    constraint_list = ["{} = %s" for i in range(pairs)]
 
     # Add in 'AND' or 'OR' between the constraints
-    constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
+    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Identifier(columns[i])) for i in range(pairs)])
 
     # Construct the query string
-    query_str = "SELECT * FROM {}"
+    query_str = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table))
     if pairs > 0:
         # Construct the WHERE constraints
-        query_str = query_str + f" WHERE {constr_str};"
+        query_str = sql.SQL("").join([query_str, sql.SQL(" WHERE "), constr_str, sql.SQL(";")])
     else:
         # No constraints, get all rows
-        query_str = query_str + ";"
+        query_str = sql.SQL("").join([query_str, sql.SQL(";")])
 
     # Attempt to get values from the database in the specified table
+    print(f"DEBUG: {query_str.as_string(conn)}")
     results = None
     try:
         cursor = conn.cursor()
-        cursor.execute(sql.SQL(query_str).format(sql.SQL(table)), values)
+        final_query = cursor.mogrify(query_str, values)
+        print("DEBUG: the query being executed: ", final_query)
+        cursor.execute(final_query)
         results = cursor.fetchall()
         colnames = [desc[0] for desc in cursor.description]
     except psycopg2.Error as e:
