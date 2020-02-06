@@ -53,12 +53,12 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     """
     # Clean up the parameters
     pairs = min(len(columns), len(values))
-    columns = columns[:pairs - 1]
-    values = values[:pairs - 1]
+    columns = columns[:pairs]
+    values = values[:pairs]
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
     # Format the SELECT constraints
-    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i - 1])).as_string(conn) for i in range(pairs)]
+    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i])).as_string(conn) for i in range(pairs)]
 
     #parameter_list = [item for tup in list(zip(columns, values)) for item in tup]
     #constraint_list = ["%s = %s" for i in range(int(len(parameter_list) / 2))]
