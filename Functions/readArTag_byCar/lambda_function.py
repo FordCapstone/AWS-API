@@ -1,6 +1,5 @@
 import os
 import psycopg2
-import toJson
 import json
 import commonCode as cc
 
