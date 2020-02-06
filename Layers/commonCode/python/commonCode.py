@@ -58,12 +58,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
     # Format the SELECT constraints
-    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i])).as_string(conn) for i in range(pairs)]
-
-    #parameter_list = [item for tup in list(zip(columns, values)) for item in tup]
-    #constraint_list = ["%s = %s" for i in range(int(len(parameter_list) / 2))]
-    #pairs = len(constraint_list)
-    #use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
+    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i])) for i in range(pairs)]
 
     # Add in 'AND' or 'OR' between the constraints
     constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
@@ -78,6 +73,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
         query_str = query_str + ";"
 
     # Attempt to get values from the database in the specified table
+    results = None
     try:
         cursor = conn.cursor()
         cursor.execute(sql.SQL(query_str).format(sql.SQL(table)), values)
