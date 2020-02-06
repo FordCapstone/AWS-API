@@ -10,7 +10,6 @@ multiple Lambda functions.
 #
 import collections
 import psycopg2
-import toJson
 import json
 
 
@@ -82,7 +81,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
         print(f"ERROR: Unable to fetch any values from the table: {table}")
         return json.loads([])
     else:
-        results_json = json.loads(toJson.ConvertToJson(colnames, results))
+        results_json = json.loads(to_json(colnames, results))
         return results_json
 
 

@@ -5,7 +5,9 @@ import os
 def lambda_handler(event, context):
 
     ar_tag = tuple(event)
-    conn = dbConnection()
+    #Create a connection to the database
+    conn = cc.db_connect(os.environ["dbName"], os.environ["dbUser"],
+                         os.environ["dbHost"], os.environ["dbPass"])
     insertArTag(conn, ar_tag)
   
 
@@ -15,7 +17,6 @@ def insertArTag(conn, ar_tag):
     Arguments: 
         conn: A connection to the database
         ar_tag: A tuple containing the AR feature tagging data
-
     """
     try:
         with conn, conn.cursor() as cursor:
@@ -27,17 +28,4 @@ def insertArTag(conn, ar_tag):
             cursor.execute("INSERT INTO ar_tag VALUES %s", [ar_tag,])
 
     except psycopg2.Error as e:
-        print(e)
-
-def dbConnection():
-    """Makes a connection the database
-
-    Returns:
-        connection: The connection to the database
-    """
-    try:
-        conn = psycopg2.connect("dbname={} user={} host={} password={}".format(
-            os.environ['dbName'],os.environ['dbUser'],os.environ['dbHost'],os.environ['dbPass']))
-        return conn
-    except psycopg2.Error as e: 
         print(e)

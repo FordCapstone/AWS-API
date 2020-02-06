@@ -5,7 +5,9 @@ import os
 def lambda_handler(event, context):
 
     tag = tuple(event)
-    conn = dbConnection()
+    #Create a connection to the database
+    conn = cc.db_connect(os.environ["dbName"], os.environ["dbUser"],
+                         os.environ["dbHost"], os.environ["dbPass"])
     insertTag(conn, tag)
   
 
@@ -15,7 +17,6 @@ def insertTag(conn, tag):
     Arguments: 
         conn: A connection to the database
         tag: A tuple containing the tag data
-
     """
     try:
         with conn, conn.cursor() as cursor:
@@ -31,17 +32,4 @@ def insertTag(conn, tag):
             cursor.execute("INSERT INTO tag (carId, name, primaryTag, page, primaryTagId) VALUES %s", [tag,])
 
     except psycopg2.Error as e:
-        print(e)
-
-def dbConnection():
-    """Makes a connection the database
-
-    Returns:
-        connection: The connection to the database
-    """
-    try:
-        conn = psycopg2.connect("dbname={} user={} host={} password={}".format(
-            os.environ['dbName'],os.environ['dbUser'],os.environ['dbHost'],os.environ['dbPass']))
-        return conn
-    except psycopg2.Error as e: 
         print(e)
