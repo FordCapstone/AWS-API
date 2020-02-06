@@ -103,7 +103,7 @@ def get_queryString(event, parameter):
     return value
 
 
-def ConvertToJson(columnNames, data):
+def to_json(columnNames, data):
     """ Takes in a list of column names and row data and converts to JSON format
     
     Args:
