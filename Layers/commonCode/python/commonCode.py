@@ -10,6 +10,7 @@ multiple Lambda functions.
 #
 import collections
 import psycopg2
+from psycopg2 import sql
 import json
 
 
@@ -50,16 +51,25 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     join those 2 constraints instead of AND.
     Returns all the matched rows formatted as JSON.
     """
-    # Format the SELECT constraints
-    constr = [" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in list(zip(columns, values))]
-    pairs = len(constr)
+    # Clean up the parameters
+    pairs = min(len(columns), len(values))
+    columns = columns[:pairs - 1]
+    values = values[:pairs - 1]
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
+    # Format the SELECT constraints
+    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i])).as_string(conn) for i in range(pairs)]
+
+    #parameter_list = [item for tup in list(zip(columns, values)) for item in tup]
+    #constraint_list = ["%s = %s" for i in range(int(len(parameter_list) / 2))]
+    #pairs = len(constraint_list)
+    #use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
+
     # Add in 'AND' or 'OR' between the constraints
-    constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constr[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
+    constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
 
     # Construct the query string
-    query_str = f"SELECT * FROM {table}"
+    query_str = "SELECT * FROM {}"
     if pairs > 0:
         # Construct the WHERE constraints
         query_str = query_str + f" WHERE {constr_str};"
@@ -70,7 +80,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     # Attempt to get values from the database in the specified table
     try:
         cursor = conn.cursor()
-        cursor.execute(query_str)
+        cursor.execute(sql.SQL(query_str).format(sql.SQL(table)), values)
         results = cursor.fetchall()
         colnames = [desc[0] for desc in cursor.description]
     except psycopg2.Error as e:
