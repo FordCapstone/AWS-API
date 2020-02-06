@@ -58,7 +58,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
     # Format the SELECT constraints
-    constraint_list = [sql.SQL("{} = %s").format(sql.Identifier(columns[i])) for i in range(pairs)]
+    constraint_list = [sql.SQL("{} = %s").format(sql.Literal(columns[i])).as_string(conn) for i in range(pairs)]
 
     # Add in 'AND' or 'OR' between the constraints
     constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
