@@ -103,6 +103,19 @@ def get_queryString(event, parameter):
     return value
 
 
+def ConvertToJson(columnNames, data):
+    """ Takes in a list of column names and row data and converts to JSON format
+    
+    Args:
+        columnNames (list): List of strings that represent the column names of the data
+        data (list(tuple))): List of tuples, where each tuple is a row of data
+    Returns:
+         A JSON formatted string that represents the row data with column name keys
+    """
+    items = [dict(zip([key for key in columnNames], row)) for row in data]
+    return json.dumps(items) 
+
+
 #
 # HTTP response functions
 #
