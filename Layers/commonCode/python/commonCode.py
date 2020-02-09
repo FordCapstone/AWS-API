@@ -61,7 +61,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     constraint_list = ["{} = %s" for i in range(pairs)]
 
     # Add in 'AND' or 'OR' between the constraints
-    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Identifier(columns[i])) for i in range(pairs)])
+    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Literal(columns[i])) for i in range(pairs)])
 
     # Construct the query string
     query_str = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table))
