@@ -61,7 +61,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     constraint_list = ["{} = %s" for i in range(pairs)]
 
     # Add in 'AND' or 'OR' between the constraints
-    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Literal(columns[i])) for i in range(pairs)])
+    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Identifier(columns[i])) for i in range(pairs)])
 
     # Construct the query string
     query_str = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table))
@@ -134,7 +134,7 @@ def response(statusCode, body, other_info):
     Returns the HTTP response formatted for Lambda.
     """
     msg = other_info.copy() if isinstance(other_info, collections.Mapping) else {}
-    msg.update({"statusCode": statusCode, "body": body})
+    msg.update({"statusCode": statusCode, "body": body, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}})
     return msg
 
 
