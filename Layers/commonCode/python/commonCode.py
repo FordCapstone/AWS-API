@@ -10,6 +10,7 @@ multiple Lambda functions.
 #
 import collections
 import psycopg2
+from psycopg2 import sql
 import json
 
 
@@ -50,27 +51,35 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     join those 2 constraints instead of AND.
     Returns all the matched rows formatted as JSON.
     """
-    # Format the SELECT constraints
-    constr = [" = ".join([t[0], f"'{str(t[1])}'" if isinstance(t[1], str) else str(t[1])]) for t in list(zip(columns, values))]
-    pairs = len(constr)
+    # Clean up the parameters
+    pairs = min(len(columns), len(values))
+    columns = columns[:pairs]
+    values = values[:pairs]
     use_or.extend([False] * max(0, (pairs - 1) - len(use_or)))
 
+    # Format the SELECT constraints
+    constraint_list = ["{} = %s" for i in range(pairs)]
+
     # Add in 'AND' or 'OR' between the constraints
-    constr_str = "".join(["".join(["(" if i < (pairs - 1) and use_or[i] else "", constr[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")]) for i in range(pairs)])
+    constr_str = sql.SQL("").join([sql.SQL("".join(["(" if i < (pairs - 1) and use_or[i] else "", constraint_list[i], ")" if i > 0 and use_or[i-1] else "", "" if i >= (pairs - 1) else (" OR " if use_or[i] else " AND ")])).format(sql.Identifier(columns[i])) for i in range(pairs)])
 
     # Construct the query string
-    query_str = f"SELECT * FROM {table}"
+    query_str = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table))
     if pairs > 0:
         # Construct the WHERE constraints
-        query_str = query_str + f" WHERE {constr_str};"
+        query_str = sql.SQL("").join([query_str, sql.SQL(" WHERE "), constr_str, sql.SQL(";")])
     else:
         # No constraints, get all rows
-        query_str = query_str + ";"
+        query_str = sql.SQL("").join([query_str, sql.SQL(";")])
 
     # Attempt to get values from the database in the specified table
+    print(f"DEBUG: {query_str.as_string(conn)}")
+    results = None
     try:
         cursor = conn.cursor()
-        cursor.execute(query_str)
+        final_query = cursor.mogrify(query_str, values)
+        print("DEBUG: the query being executed: ", final_query)
+        cursor.execute(final_query)
         results = cursor.fetchall()
         colnames = [desc[0] for desc in cursor.description]
     except psycopg2.Error as e:
@@ -125,7 +134,7 @@ def response(statusCode, body, other_info):
     Returns the HTTP response formatted for Lambda.
     """
     msg = other_info.copy() if isinstance(other_info, collections.Mapping) else {}
-    msg.update({"statusCode": statusCode, "body": body})
+    msg.update({"statusCode": statusCode, "body": body, "headers": {"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"}})
     return msg
 
 
