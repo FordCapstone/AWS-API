@@ -28,37 +28,48 @@ def lambda_handler(event, context):
             Payload=json.dumps(car),
         )
 
+    writeCarResponse = writeCarResponse['Payload'].read().decode('utf-8').strip('\"')
     print(writeCarResponse)
 
     #Check the writeCarResponse to see if the car was successfully written to the database
-    if(isinstance(writeCarResponse, int)):
+    try:
+        #Try to convert the response to an int. If it fails, it means the database write failed.
+        carId = int(writeCarResponse)
         #Call generateTags Lambda to generate tags from the linked owner's manual and wait for a response
-        payload = {"carId": response, "manualUrl": ownerManual}
+        payload = {"carId": carId, "manualUrl": ownerManual}
         generateTagsResponse = lambdaClient.invoke(
             FunctionName= os.environ['generateTagsArn'],
             InvocationType='RequestResponse',
             LogType='None',
             Payload=json.dumps(payload),
         )
-    else:
+        generateTagsResponse = generateTagsResponse['Payload'].read().decode('utf-8').strip('\"')
+        print(generateTagsResponse)
+    except:
         #Return the error message from attempting to write the car to the database
-        return writeCarResponse
+        return cc.response_bad_request(writeCarResponse)
 
 
     #Check the response from generating the tags
-    if(isinstance(generateTagsResponse, int)):
-        #Call generateTags Lambda to generate tags from the linked owner's manual and wait for a response
-        payload = {"carId": response, "manualUrl": ownerManual}
+    try:
+        list(generateTagsResponse)
+        #Call writeTags Lambda to write the generated tags to the database
         writeTagsResponse = lambdaClient.invoke(
             FunctionName= os.environ['writeTagsArn'],
             InvocationType='RequestResponse',
             LogType='None',
-            Payload=json.dumps(payload),
+            Payload=json.dumps(generateTagsResponse),
         )
-    else:
+    except:
         #Return the error message from attempting to write the car to the database
-        return generateTagsResponse
+        return cc.response_bad_request("Unable to generate tags for the vehicle. Ensure the link to the owner's manual is the correct PDF)
+        
+    #If all of the writes were successfuly, return a 200 response code.
+    return cc.response_ok("Successfully created new vehicle")
 
+
+    #TODO: Write AR features after writeMedia has been completed and AR tagging writing is next.
+    """
     #Check the response from writing the tags
     if(isinstance(writeTagsResponse, int)):
         #Call generateTags Lambda to generate tags from the linked owner's manual and wait for a response
@@ -73,6 +84,7 @@ def lambda_handler(event, context):
     else:
         #Return the error message from attempting to write the car to the database
         return writeTagsResponse
+    """
 
     
         

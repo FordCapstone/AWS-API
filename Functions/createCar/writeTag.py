@@ -38,6 +38,7 @@ def insertPrimaryTag(conn, tag):
     """
     try:
         with conn, conn.cursor() as cursor:
+            cursor.execute("DROP TABLE tag;")
             cursor.execute("""CREATE TABLE IF NOT EXISTS tag 
             (tagId SERIAL NOT NULL, 
             carId int4 NOT NULL, 
@@ -45,7 +46,9 @@ def insertPrimaryTag(conn, tag):
             primaryTag bool NOT NULL, 
             page int4, 
             primaryTagId int4, 
-            PRIMARY KEY (tagId));""")  
+            PRIMARY KEY (tagId),
+            FOREIGN KEY (carId) REFERENCES car (carId),
+            FOREIGN KEY (primaryTagId) REFERENCES tag (tagId));;""")  
 
             cursor.execute("INSERT INTO tag (carId, name, primaryTag, page, primaryTagId) VALUES %s RETURNING tagId;""", [tag,])
 
