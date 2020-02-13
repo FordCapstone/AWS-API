@@ -88,7 +88,7 @@ def db_get_where(conn, table, columns, values, use_or=[]):
     # Check that the database returned values
     if(results == None):
         print(f"ERROR: Unable to fetch any values from the table: {table}")
-        return json.loads([])
+        return json.loads("[]")
     else:
         results_json = json.loads(to_json(colnames, results))
         return results_json
