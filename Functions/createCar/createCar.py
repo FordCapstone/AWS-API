@@ -14,11 +14,12 @@ def lambda_handler(event, context):
         model = body["model"]
         year = body["year"]
         ownerManual = body["ownermanual"]
+        icon = "https://owner.ford.com/ownerlibs/content/dam/assets/ford/vehicle/" + str(year) + "/" + str(year) + "-" + make.lower() + "-" + model.lower() + "-s.png"
     except:
         return cc.response_bad_request("Invalid body format. Please follow formatting instructions.")
     
     #Create a tuple containing the vehicle data
-    car = [make, model, year, ownerManual]
+    car = [make, model, year, ownerManual, icon]
 
     #Call the writeCar function and get a response containing the carId of the row written to the DB
     writeCarResponse = lambdaClient.invoke(
@@ -62,7 +63,7 @@ def lambda_handler(event, context):
         )
     except:
         #Return the error message from attempting to write the car to the database
-        return cc.response_bad_request("Unable to generate tags for the vehicle. Ensure the link to the owner's manual is the correct PDF)
+        return cc.response_bad_request("Unable to generate tags for the vehicle. Ensure the link to the owner's manual is the correct PDF")
         
     #If all of the writes were successfuly, return a 200 response code.
     return cc.response_ok("Successfully created new vehicle")

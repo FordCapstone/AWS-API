@@ -32,10 +32,11 @@ def insertCar(conn, car):
             model varchar(100) NOT NULL, 
             year int4 NOT NULL, 
             ownerManual varchar(240) NOT NULL, 
+            icon varchar(100) NOT NULL,
             UNIQUE (make, model, year),
             PRIMARY KEY (carId));""")  
 
-            cursor.execute("INSERT INTO car (make, model, year, ownerManual) VALUES %s RETURNING carId", [car,])
+            cursor.execute("INSERT INTO car (make, model, year, ownerManual, icon) VALUES %s RETURNING carId", [car,])
             
             #Return the carId of the row just inserted
             return cursor.fetchone()[0]
