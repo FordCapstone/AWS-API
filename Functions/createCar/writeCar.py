@@ -10,6 +10,7 @@ def lambda_handler(event, context):
     #Create a connection to the database
     conn = cc.db_connect(os.environ["dbName"], os.environ["dbUser"],
                          os.environ["dbHost"], os.environ["dbPass"])
+    
     if(conn != None):
         response = insertCar(conn, car)
         return response
@@ -45,4 +46,4 @@ def insertCar(conn, car):
         if  isinstance(e, psycopg2.IntegrityError):
             return "Unable to add duplicate vehicle. Combination of make, model, and year must be unique."
         else:
-            return "Unable to add vehicle." 
+            return "Unable to add vehicle."
