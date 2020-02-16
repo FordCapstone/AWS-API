@@ -3,11 +3,16 @@ import psycopg2
 import os
 
 def lambda_handler(event, context):
-
+    """
+    Handler function for Lambda events
+    Writes an entry to the ar_tag table in the database
+    """
     ar_tag = tuple(event)
+
     #Create a connection to the database
     conn = cc.db_connect(os.environ["dbName"], os.environ["dbUser"],
                          os.environ["dbHost"], os.environ["dbPass"])
+
     insertArTag(conn, ar_tag)
   
 
