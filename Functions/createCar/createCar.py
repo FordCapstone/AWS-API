@@ -86,6 +86,3 @@ def lambda_handler(event, context):
         #Return the error message from attempting to write the car to the database
         return writeTagsResponse
     """
-
-    
-        
