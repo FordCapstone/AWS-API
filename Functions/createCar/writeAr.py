@@ -22,13 +22,18 @@ def insertAr(conn, ar):
     """
     try:
         with conn, conn.cursor() as cursor:
-            cursor.execute("""CREATE TABLE IF NOT EXISTS ar 
+            cursor.execute("""CREATE TABLE ar 
             (arId SERIAL NOT NULL, 
             carId int4 NOT NULL, 
             feature varchar(100) NOT NULL, 
-            PRIMARY KEY (arId));""")  
+            location varchar(50) NOT NULL, 
+            primaryTag int4 NOT NULL, 
+            secondaryTag int4, 
+            PRIMARY KEY (arId),
+            FOREIGN KEY(secondaryTag) REFERENCES tag(tagId),
+            FOREIGN KEY(primaryTag) REFERENCES tag(tagId));""")  
 
-            cursor.execute("INSERT INTO ar (carId, feature) VALUES %s", [ar,])
+            cursor.execute("INSERT INTO ar (carId, feature, location, primaryTag, secondaryTag) VALUES %s", [ar,])
 
     except psycopg2.Error as e:
         print(e)

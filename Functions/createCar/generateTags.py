@@ -114,7 +114,7 @@ def parseTags(pdf, carId):
     for dest in outline:
         if not isinstance(dest, list):
             cleanedTag = cleanTag(dest.title)
-            if cleanedTag != False and cleanedTag not in tagsSet:
+            if (cleanedTag != False) and (cleanedTag not in tagsSet):
                 #Create a dictionary to be stored in JSON format as a top level entry in the tags list
                 currPrimaryTag["carId"] = carId
                 currPrimaryTag["name"] = cleanedTag
@@ -127,7 +127,7 @@ def parseTags(pdf, carId):
             for d in dest:
                 if not isinstance(d, list):
                     cleanedTag = cleanTag(d.title)
-                    if cleanedTag != False and cleanedTag not in tagsSet and len(currPrimaryTag) != 0:
+                    if (cleanedTag != False) and (cleanedTag not in tagsSet) and (len(currPrimaryTag) != 0):
                         secondaryTag = dict()
                         secondaryTag["carId"] = carId
                         secondaryTag["name"] = cleanedTag
