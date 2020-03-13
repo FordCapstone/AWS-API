@@ -38,7 +38,6 @@ def insertPrimaryTag(conn, tag):
     """
     try:
         with conn, conn.cursor() as cursor:
-            cursor.execute("DROP TABLE tag;")
             cursor.execute("""CREATE TABLE IF NOT EXISTS tag 
             (tagId SERIAL NOT NULL, 
             carId int4 NOT NULL, 

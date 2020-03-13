@@ -7,7 +7,7 @@ import commonCode as cc
 def lambda_handler(event, context):
     """
     Handler function for Lambda events
-    Returns all of the AR information for a specific car
+    Returns all of the Tag information for a specific car
     """
     # Get the carId
     carId = cc.get_queryString(event, "carid")
@@ -26,12 +26,12 @@ def lambda_handler(event, context):
     
      # Return the list of ar features and tags
     if(conn != None):
-        return cc.response_ok(json.dumps(get_ar_by_car(conn, carId)))
+        return cc.response_ok(json.dumps(get_tag_by_car(conn, carId)))
 
 
-def get_ar_by_car(conn, carId):
+def get_tag_by_car(conn, carId):
     """
-    Retrieves all AR info for a specific carId from the database
-    Returns all the AR info as JSON
+    Retrieves all Tags for a specific carId from the database
+    Returns all the Tags as JSON
     """
-    return cc.db_get_where(conn, "ar", ["carId"], [carId])
+    return cc.db_get_where(conn, "tag", ["carid"], [carId])
