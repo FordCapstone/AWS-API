@@ -1,3 +1,4 @@
+import requests
 import json
 import commonCode as cc
 import boto3
@@ -13,10 +14,26 @@ def lambda_handler(event, context):
         make = body["make"]
         model = body["model"]
         year = body["year"]
-        ownerManual = body["ownermanual"]
         icon = "https://owner.ford.com/ownerlibs/content/dam/assets/ford/vehicle/" + str(year) + "/" + str(year) + "-" + make.lower() + "-" + model.lower() + "-s.png"
-    except:
+    except Exception as e: 
+        print(e)
         return cc.response_bad_request("Invalid body format. Please follow formatting instructions.")
+
+    
+    try:
+        #Build the url to retrieve the PDFs for this vehicle
+        url = "https://www.fleet.ford.com/aemservices/cache/ownermanuals?" "year="+ str(year) + "&" + "make=" + make.lower() + "&" + "model=" + model.title() + "&country=USA&language=EN-US"
+        page = requests.get(url)
+        data = json.loads(page.text)
+
+        #Parse the returned JSON to find the latest version of the owner's manual
+        ownerManual = ""
+        for item in data:
+            if("Owner's Manual" in item["title"] and "Police" not in item["title"] and "Supplement" not in item["title"] and item["category"] == "PDF"):
+                ownerManual = item["link"]
+    except Exception as e: 
+        print(e)
+        return cc.response_bad_request("Invalid vehicle make, model, or year.")
     
     #Create a tuple containing the vehicle data
     car = [make, model, year, ownerManual, icon]
