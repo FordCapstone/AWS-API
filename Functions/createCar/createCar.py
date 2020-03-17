@@ -3,6 +3,7 @@ import json
 import commonCode as cc
 import boto3
 import os
+import re
 
 lambdaClient = boto3.client('lambda')
 
@@ -11,14 +12,16 @@ def lambda_handler(event, context):
     #Try to retrieve the appropriate data from the body. If an error occurs, send a 400 error code as a response
     try:
         body = json.loads(event["body"])
-        make = body["make"]
-        model = body["model"]
+        make = body["make"].title()
+        model = body["model"].title()
         year = body["year"]
         icon = "https://owner.ford.com/ownerlibs/content/dam/assets/ford/vehicle/" + str(year) + "/" + str(year) + "-" + make.lower() + "-" + model.lower() + "-s.png"
     except Exception as e: 
         print(e)
         return cc.response_bad_request("Invalid body format. Please follow formatting instructions.")
 
+    if(int(year) < 2005):
+        return cc.response_bad_request("Cannot add vehicle prior to 2005.")
     
     try:
         #Build the url to retrieve the PDFs for this vehicle
@@ -28,9 +31,12 @@ def lambda_handler(event, context):
 
         #Parse the returned JSON to find the latest version of the owner's manual
         ownerManual = ""
+
+        pattern = re.compile("Owner's Manual Printing \d")
         for item in data:
-            if("Owner's Manual" in item["title"] and "Police" not in item["title"] and "Supplement" not in item["title"] and item["category"] == "PDF"):
+            if(pattern.match(item["title"])):
                 ownerManual = item["link"]
+        print(ownerManual)
     except Exception as e: 
         print(e)
         return cc.response_bad_request("Invalid vehicle make, model, or year.")
