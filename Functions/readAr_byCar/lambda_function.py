@@ -30,8 +30,30 @@ def lambda_handler(event, context):
 
 
 def get_ar_by_car(conn, carId):
+    """ Retrieves all AR features for a car
+    Args:
+        conn: The database connection
+        carId: The id of the car
+    Returns:
+         The AR features
     """
-    Retrieves all AR info for a specific carId from the database
-    Returns all the AR info as JSON
-    """
-    return cc.db_get_where(conn, "ar", ["carId"], [carId])
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT ar.arId, ar.enabled, ar_button.feature, 
+        ar_button.section, ar.location, ar.primaryTag, ar.secondaryTag, ar_button.image
+        FROM ar
+        INNER JOIN ar_button ON ar.ar_buttonid = ar_button.ar_buttonId
+        WHERE ar.carId = %s;""", 
+        (carId,))
+        arFeatures = cursor.fetchall()
+        colnames = [desc[0] for desc in cursor.description]
+    except psycopg2.Error as e:
+        print(e)
+        return
+
+    if(arFeatures == None):
+        print("No AR features found!")
+    else:
+        arFeatures = json.loads(cc.to_json(colnames, arFeatures))
+        return arFeatures
+    return None

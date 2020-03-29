@@ -1,67 +1,67 @@
 [
     {
-        "feature": "Audio Control",
-        "section": "Steering Wheel",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/audioControl.svg"
+      "feature": "Audio Control",
+      "section": "Steering Wheel",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/audioControl.svg"
     },
     {
-        "feature": "Voice Control",
-        "section": "Steering Wheel",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/voiceControl.svg"
+      "feature": "Voice Control",
+      "section": "Steering Wheel",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/voiceControl.svg"
     },
     {
-        "feature": "Cruise Control",
-        "section": "Steering Wheel",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/cruiseControl.svg"
-        },
-    {
-        "feature": "Entertainment",
-        "section": "Entertainment System",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/audio.svg"
+      "feature": "Cruise Control",
+      "section": "Steering Wheel",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/cruiseControl.svg"
     },
     {
-        "feature": "Climate",
-        "section": "Entertainment System",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/climate.svg"
+      "feature": "Entertainment",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/audio.svg"
     },
     {
-        "feature": "Phone",
-        "section": "Entertainment System",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/phone.svg"
+      "feature": "Climate",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/climate.svg"
     },
     {
-        "feature": "Navigation",
-        "section": "Entertainment System",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/nav.svg"
+      "feature": "Phone",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/phone.svg"
     },
     {
-        "feature": "Apps",
-        "section": "Entertainment System",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/apps.svg"
+      "feature": "Navigation",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/nav.svg"
     },
     {
-        "feature": "Settings",
-        "section": "Steering Wheel",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/settings.svg"
+      "feature": "Apps",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/apps.svg"
     },
     {
-        "feature": "Anti-lock Braking System",
-        "section": "Instrument Cluster",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/antiLockBrakeSystem.svg"
+      "feature": "Settings",
+      "section": "Entertainment System",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/settings.svg"
     },
     {
-        "feature": "Low Tire Pressure",
-        "section": "Instrument Cluster",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/lowTirePressur.svg"
+      "feature": "Anti-lock Braking System",
+      "section": "Instrument Cluster",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/antiLockBrakeSystem.svg"
     },
     {
-        "feature": "Service Engine",
-        "section": "Instrument Cluster",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/checkEngine.svg"
+      "feature": "Low Tire Pressure",
+      "section": "Instrument Cluster",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/lowTirePressure.svg"
     },
     {
-        "feature": "Engine Oil",
-        "section": "Instrument Cluster",
-        "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/oilPressue.svg"
+      "feature": "Service Engine",
+      "section": "Instrument Cluster",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/checkEngine.svg"
+    },
+    {
+      "feature": "Engine Oil",
+      "section": "Instrument Cluster",
+      "image": "https://ar-button-images.s3.us-east-2.amazonaws.com/oilPressure.svg"
     }
   ]
