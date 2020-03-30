@@ -40,7 +40,7 @@ def insertArButtons(conn, buttons):
             image varchar(250) NOT NULL, 
             PRIMARY KEY (ar_buttonId));""")  
 
-            #Executes an insert SQL query to insert the player data
+            #Executes an insert SQL query to insert the AR button data
             psycopg2.extras.execute_values(cursor, "INSERT INTO ar_button (feature, section, image) VALUES %s", buttons)
 
             #If all of the writes were successfuly, return a 200 response code.
