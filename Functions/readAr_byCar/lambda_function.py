@@ -39,7 +39,7 @@ def get_ar_by_car(conn, carId):
     """
     try:
         cursor = conn.cursor()
-        cursor.execute("""SELECT ar.arId, ar.enabled, ar_button.feature, 
+        cursor.execute("""SELECT ar.ar_buttonid, ar.enabled, ar_button.feature, 
         ar_button.section, ar.location, ar.primaryTag, ar.secondaryTag, ar_button.image
         FROM ar
         INNER JOIN ar_button ON ar.ar_buttonid = ar_button.ar_buttonId

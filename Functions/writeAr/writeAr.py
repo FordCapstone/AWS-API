@@ -35,24 +35,30 @@ def insertAr(conn, ar):
 
     Arguments: 
         conn: A connection to the database
-        ar: A tuple containing the AR data
+        ar: A list of tuples containing the AR data
     """
     try:
         with conn, conn.cursor() as cursor:
             cursor.execute("""CREATE TABLE IF NOT EXISTS ar 
-            (arId SERIAL NOT NULL, 
+            (ar_buttonid int4 NOT NULL, 
             carId int4 NOT NULL, 
             enabled bool NOT NULL, 
             location varchar(50) NOT NULL, 
             primaryTag int4 NOT NULL, 
             secondaryTag int4, 
-            ar_buttonid int4 NOT NULL, 
-            PRIMARY KEY (arId));""")  
+            PRIMARY KEY (ar_buttonid, carId));""") 
 
             #Executes an insert SQL query to insert the player data
-            psycopg2.extras.execute_values(cursor, "INSERT INTO ar (carId, enabled, location, primaryTag, secondaryTag, ar_buttonid) VALUES %s", ar)
+            psycopg2.extras.execute_values(cursor, 
+            """INSERT INTO ar 
+            (carId, enabled, location, primaryTag, secondaryTag, ar_buttonid) VALUES %s
+            ON CONFLICT (carId, ar_buttonid) DO UPDATE SET
+            enabled = EXCLUDED.enabled,
+            location = EXCLUDED. location,
+            primaryTag = EXCLUDED.primaryTag,
+            secondaryTag = EXCLUDED.secondaryTag
+            """, ar)
 
-            
             #If all of the writes were successful, return a 200 response code.
             return cc.response_ok("Successfully added AR to database")
 
